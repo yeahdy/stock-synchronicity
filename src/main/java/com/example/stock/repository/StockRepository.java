@@ -12,7 +12,9 @@ import org.springframework.stereotype.Repository;
     트랜잭션 충돌(동시성문제)이 무조건 발생할 것이라고 가정하고 접근
     모든 트랜잭션은 락을 먼저 획득하고 작업수행. 다른 트랜잭션이 동일한 데이터를 변경하지 못하게 방지
     DB에서 Lock 을 획득할 때까지 대기 (데드락 발생 가능성 존재)
-    DB에 innodb_lock_wait_timeout 설정으로 트랜잭션이 잠금을 기다리는 최대 시간 설정가능
+    @QueryHint 를 통해서 timeout 설정 가능
+    (또는 DB에 innodb_lock_wait_timeout 설정으로 트랜잭션이 잠금을 기다리는 최대 시간 설정가능)
+
 
  * 낙관적 락(Optimistic Lock)
     데이터 변경 시점에서 버전 검사로 충돌을 감지하고 해결하는 방식

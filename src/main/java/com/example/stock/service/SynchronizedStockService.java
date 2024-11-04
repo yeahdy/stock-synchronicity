@@ -24,4 +24,6 @@ public class SynchronizedStockService implements StockService {
         stockRepository.saveAndFlush(stock);
     }
 
+    @Override
+    public Stock selectStock(Long id) {return null;}
 }

@@ -18,6 +18,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class RedisLockStockFacadeTest {
 
     @Autowired
+    private RedissonLockStockFacade redissonLockStockFacade;
+
+    @Autowired
     private LettuceLockStockFacade lettuceLockStockFacade;
 
     @Autowired
@@ -31,6 +34,32 @@ public class RedisLockStockFacadeTest {
     @AfterEach
     public void afterEach() {
         stockRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("redisson Lock 동시에 10000개 재고 요청하기")
+    void redisson_Lock_동시에_10000개_재고_요청하기() throws InterruptedException {
+        //given
+        int threadCount = 10000;
+        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        //when
+        for(int i = 0; i < threadCount; i++) {
+            executorService.submit(() -> {
+                try{
+                    redissonLockStockFacade.decrease(1L,1L);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        //then
+        Stock stock = stockRepository.findById(1L).orElseThrow();
+        assertEquals(0,stock.getQuantity());
     }
 
     @Test
